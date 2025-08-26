@@ -14,5 +14,5 @@ input.onButtonPressed(Button.A, function () {
 })
 
 basic.pause(100)
-rfid2.init(0x28)
+rfid2.init()
 basic.showString("RFID2")
