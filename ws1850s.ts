@@ -189,8 +189,7 @@ namespace rfid2 {
 
     /* RENAME: tidl. init(addr:number=0x28) -> initRaw(...) og skjul i Blocks */
     //% blockId=rfid2_init_raw blockHidden=true
-    export function initRaw(addr: number = DEFAULT_ADDR): void {
-        I2C_ADDR = addr & 0x7F
+    export function initRaw(addr: number = I2C_ADDR): void {
         softReset()
         writeReg(TModeReg, 0x80)
         writeReg(TPrescalerReg, 0xA9)
@@ -207,7 +206,7 @@ namespace rfid2 {
     //% block="init RFID2"
     //% weight=101
     export function init(): void {
-        initRaw(DEFAULT_ADDR)
+        initRaw(I2C_ADDR)
     }
     
     //% blockId=rfid2_is_present block="card present?"
