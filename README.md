@@ -22,3 +22,5 @@ Use an adapter to bring the Grove HY2.0-4P of RFID2 to micro:bit I²C (3V, GND, 
 This is a minimal ISO14443A implementation focused on UID reading. Multi-cascade UIDs (7/10 bytes) currently return the first cascade level only. Authentication and data read/write are not implemented (could be added later).
 
 The library has been built with ChatGPT 5
+
+License: MIT
