@@ -187,24 +187,46 @@ namespace rfid2 {
         return s
     }
 
-    //% blockId=rfid2_init block="init RFID2 at I²C address %addr"
-    //% addr.defl=0x28
-    export function init(addr: number = 0x28): void {
-        I2C_ADDR = addr & 0x7F
-        softReset()
+//    //% blockId=rfid2_init block="init RFID2 at I²C address %addr"
+//    //% addr.defl=0x28
+//    export function init(addr: number = 0x28): void {
+//        I2C_ADDR = addr & 0x7F
+//        softReset()
 
         // Timer + mode setup (standard values used for MFRC522/PN512)
+//        writeReg(TModeReg, 0x80)
+//        writeReg(TPrescalerReg, 0xA9)
+//        writeReg(TReloadRegL, 0xE8)
+//        writeReg(TReloadRegH, 0x03)
+//        writeReg(TxASKReg, 0x40) // 100% ASK
+//        writeReg(ModeReg, 0x3D)  // CRC preset 0x6363
+
+//        antennaOn()
+//        _initialized = true
+//    }
+    /* RENAME: tidl. init(addr:number=0x28) -> initRaw(...) og skjul i Blocks */
+    //% blockId=rfid2_init_raw blockHidden=true
+    export function initRaw(addr: number = DEFAULT_ADDR): void {
+        I2C_ADDR = addr & 0x7F
+        softReset()
         writeReg(TModeReg, 0x80)
         writeReg(TPrescalerReg, 0xA9)
         writeReg(TReloadRegL, 0xE8)
         writeReg(TReloadRegH, 0x03)
-        writeReg(TxASKReg, 0x40) // 100% ASK
-        writeReg(ModeReg, 0x3D)  // CRC preset 0x6363
-
+        writeReg(TxASKReg, 0x40)
+        writeReg(ModeReg, 0x3D)
         antennaOn()
         _initialized = true
     }
 
+        /* NY synlig blokk uten adresse-parameter */
+    //% blockId=rfid2_init
+    //% block="init RFID2"
+    //% weight=101
+    export function init(): void {
+        initRaw(DEFAULT_ADDR)
+    }
+    
     //% blockId=rfid2_is_present block="card present?"
     export function isCardPresent(): boolean {
         if (!_initialized) init(I2C_ADDR)
@@ -234,97 +256,97 @@ namespace rfid2 {
     export function setAddress(addr: number) {
         I2C_ADDR = addr & 0x7F
     }
-    // --- Hex-nibbles for I²C-adresse (7-bit: 0x08..0x77) ---
-export enum I2CHexHi {
-    //% block="0x0"
-    H0 = 0,
-    //% block="0x1"
-    H1 = 1,
-    //% block="0x2"
-    H2 = 2,
-    //% block="0x3"
-    H3 = 3,
-    //% block="0x4"
-    H4 = 4,
-    //% block="0x5"
-    H5 = 5,
-    //% block="0x6"
-    H6 = 6,
-    //% block="0x7"
-    H7 = 7
-}
-
-export enum I2CHexLo {
-    //% block="0"
-    N0 = 0,
-    //% block="1"
-    N1 = 1,
-    //% block="2"
-    N2 = 2,
-    //% block="3"
-    N3 = 3,
-    //% block="4"
-    N4 = 4,
-    //% block="5"
-    N5 = 5,
-    //% block="6"
-    N6 = 6,
-    //% block="7"
-    N7 = 7,
-    //% block="8"
-    N8 = 8,
-    //% block="9"
-    N9 = 9,
-    //% block="A"
-    NA = 10,
-    //% block="B"
-    NB = 11,
-    //% block="C"
-    NC = 12,
-    //% block="D"
-    ND = 13,
-    //% block="E"
-    NE = 14,
-    //% block="F"
-    NF = 15
-}
-
-/**
- * Bygg en I²C-adresse fra heks nibbles (og valider at den er 0x08..0x77).
- */
-//% blockId=rfid2_hex_addr_builder
-//% block="I²C-hex %hi %lo"
-//% hi.defl=I2CHexHi.H2 lo.defl=I2CHexLo.N8
-//% inlineInputMode=inline
-export function hexAddress(hi: I2CHexHi, lo: I2CHexLo): number {
-    const a = ((hi & 0x7) << 4) | (lo & 0xF)
-    // Gyldige 7-bit adresser er 0x08..0x77 (0x00..0x07 og 0x78..0x7F er reservert)
-    if (a < 0x08 || a > 0x77) return 0x28 // fall back til standarden
-    return a
-}
-
-/**
- * Init med heks-nedtrekk (samme som init, men med nibble-valg).
- */
-//% blockId=rfid2_init_hex
-//% block="init RFID2 på I²C-adresse %hi %lo"
-//% hi.defl=I2CHexHi.H2 lo.defl=I2CHexLo.N8
-//% weight=101
-export function initHex(hi: I2CHexHi, lo: I2CHexLo): void {
-    const addr = hexAddress(hi, lo)
-    init(addr)
-}
-
-/**
- * Endre adresse i etterkant via heks-nedtrekk.
- */
-//% blockId=rfid2_set_addr_hex
-//% block="sett I²C-adresse til %hi %lo"
-//% hi.defl=I2CHexHi.H2 lo.defl=I2CHexLo.N8
-//% weight=60
-export function setAddressHex(hi: I2CHexHi, lo: I2CHexLo): void {
-    const addr = hexAddress(hi, lo)
-    setAddress(addr)
-}
+        // --- Hex-nibbles for I²C-adresse (7-bit: 0x08..0x77) ---
+    export enum I2CHexHi {
+        //% block="0x0"
+        H0 = 0,
+        //% block="0x1"
+        H1 = 1,
+        //% block="0x2"
+        H2 = 2,
+        //% block="0x3"
+        H3 = 3,
+        //% block="0x4"
+        H4 = 4,
+        //% block="0x5"
+        H5 = 5,
+        //% block="0x6"
+        H6 = 6,
+        //% block="0x7"
+        H7 = 7
+    }
+    
+    export enum I2CHexLo {
+        //% block="0"
+        N0 = 0,
+        //% block="1"
+        N1 = 1,
+        //% block="2"
+        N2 = 2,
+        //% block="3"
+        N3 = 3,
+        //% block="4"
+        N4 = 4,
+        //% block="5"
+        N5 = 5,
+        //% block="6"
+        N6 = 6,
+        //% block="7"
+        N7 = 7,
+        //% block="8"
+        N8 = 8,
+        //% block="9"
+        N9 = 9,
+        //% block="A"
+        NA = 10,
+        //% block="B"
+        NB = 11,
+        //% block="C"
+        NC = 12,
+        //% block="D"
+        ND = 13,
+        //% block="E"
+        NE = 14,
+        //% block="F"
+        NF = 15
+    }
+    
+    /**
+     * Bygg en I²C-adresse fra heks nibbles (og valider at den er 0x08..0x77).
+     */
+    //% blockId=rfid2_hex_addr_builder
+    //% block="I²C-hex %hi %lo"
+    //% hi.defl=I2CHexHi.H2 lo.defl=I2CHexLo.N8
+    //% inlineInputMode=inline
+    export function hexAddress(hi: I2CHexHi, lo: I2CHexLo): number {
+        const a = ((hi & 0x7) << 4) | (lo & 0xF)
+        // Gyldige 7-bit adresser er 0x08..0x77 (0x00..0x07 og 0x78..0x7F er reservert)
+        if (a < 0x08 || a > 0x77) return 0x28 // fall back til standarden
+        return a
+    }
+    
+    /**
+     * Init med heks-nedtrekk (samme som init, men med nibble-valg).
+     */
+    //% blockId=rfid2_init_hex
+    //% block="init RFID2 på I²C-adresse %hi %lo"
+    //% hi.defl=I2CHexHi.H2 lo.defl=I2CHexLo.N8
+    //% weight=101
+    export function initHex(hi: I2CHexHi, lo: I2CHexLo): void {
+        const addr = hexAddress(hi, lo)
+        init(addr)
+    }
+    
+    /**
+     * Endre adresse i etterkant via heks-nedtrekk.
+     */
+    //% blockId=rfid2_set_addr_hex
+    //% block="sett I²C-adresse til %hi %lo"
+    //% hi.defl=I2CHexHi.H2 lo.defl=I2CHexLo.N8
+    //% weight=60
+    export function setAddressHex(hi: I2CHexHi, lo: I2CHexLo): void {
+        const addr = hexAddress(hi, lo)
+        setAddress(addr)
+    }
 
 }
