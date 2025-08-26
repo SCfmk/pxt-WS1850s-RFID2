@@ -1,6 +1,6 @@
 {
   "name": "ws1850s-rfid2",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "RFID2 (WS1850S) driver for BBC micro:bit / MakeCode",
   "license": "MIT",
   "dependencies": {
