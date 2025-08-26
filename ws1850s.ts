@@ -187,23 +187,6 @@ namespace rfid2 {
         return s
     }
 
-//    //% blockId=rfid2_init block="init RFID2 at I²C address %addr"
-//    //% addr.defl=0x28
-//    export function init(addr: number = 0x28): void {
-//        I2C_ADDR = addr & 0x7F
-//        softReset()
-
-        // Timer + mode setup (standard values used for MFRC522/PN512)
-//        writeReg(TModeReg, 0x80)
-//        writeReg(TPrescalerReg, 0xA9)
-//        writeReg(TReloadRegL, 0xE8)
-//        writeReg(TReloadRegH, 0x03)
-//        writeReg(TxASKReg, 0x40) // 100% ASK
-//        writeReg(ModeReg, 0x3D)  // CRC preset 0x6363
-
-//        antennaOn()
-//        _initialized = true
-//    }
     /* RENAME: tidl. init(addr:number=0x28) -> initRaw(...) og skjul i Blocks */
     //% blockId=rfid2_init_raw blockHidden=true
     export function initRaw(addr: number = DEFAULT_ADDR): void {
