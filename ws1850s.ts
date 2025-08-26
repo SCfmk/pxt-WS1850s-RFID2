@@ -169,7 +169,7 @@ namespace rfid2 {
         // SELECT CL1: 0x93 0x70 + (UID0..3 + BCC) + CRC_A
         const sel: number[] = [PICC_SEL_CL1, 0x70].concat(uid0_4)
         const crc = calcCRC(sel)
-        sel.push(crc[0], crc[1])
+        sel.push(crc[0]); sel.push(crc[1])
         r = transceive(sel, 0) // expect SAK (1 byte + CRC_A usually)
         if (!r.ok || r.data.length < 1) return { ok: false, uid: [], sak: 0 }
         const sak = r.data[0]
@@ -177,15 +177,17 @@ namespace rfid2 {
         return { ok: true, uid: uid0_4.slice(0, 4), sak: sak }
     }
 
-    function toHex(bytes: number[]): string {
-        let s = ""
-        for (let b of bytes) {
-            let h = b.toString(16)
-            if (h.length < 2) h = "0" + h
-            s += h
-        }
-        return s
-    }
+function byteToHex(b: number): string {
+    const hex = "0123456789abcdef"
+    return hex.charAt((b >> 4) & 0x0f) + hex.charAt(b & 0x0f)
+}
+
+function toHex(bytes: number[]): string {
+    let s = ""
+    for (let b of bytes) s += byteToHex(b)
+    return s
+}
+
 
     /* RENAME: tidl. init(addr:number=0x28) -> initRaw(...) og skjul i Blocks */
     //% blockId=rfid2_init_raw blockHidden=true
@@ -211,14 +213,14 @@ namespace rfid2 {
     
     //% blockId=rfid2_is_present block="card present?"
     export function isCardPresent(): boolean {
-        if (!_initialized) init(I2C_ADDR)
+        if (!_initialized) init()
         const req = requestA()
         return req.ok
     }
 
     //% blockId=rfid2_read_uid block="read card UID (hex)"
     export function readUidHex(): string {
-        if (!_initialized) init(I2C_ADDR)
+        if (!_initialized) init()
         const req = requestA()
         if (!req.ok) return ""
         const ac1 = anticollSelectCL1()
@@ -229,7 +231,7 @@ namespace rfid2 {
 
     //% blockId=rfid2_version block="chip version (raw)"
     export function version(): number {
-        if (!_initialized) init(I2C_ADDR)
+        if (!_initialized) init()
         return readReg(VersionReg)
     }
     
